@@ -469,9 +469,7 @@
     <p class="hero-eyebrow"><span>//</span> FULL-STACK DEVELOPER · SISTEMAS · INFRA</p>
     <h1>Mozar<br><em>Gonçalves</em></h1>
     <p class="hero-sub">
-      Responsável pela arquitectura, desenvolvimento e operação completa de um sistema 
-      de orçamentação em produção — migração activa de monólito VBA/Access para 
-      stack Node.js + SQL Server + Web, sem downtime, a solo.
+      Responsável pela arquitectura, desenvolvimento e operação completa de uma plataforma empresarial crítica em produção — migração incremental de sistema legado VBA/Access para arquitectura moderna baseada em Node.js, SQL Server e aplicações web, sem interrupção operacional e desenvolvida integralmente a solo.
     </p>
     <div class="hero-cta">
       <a class="btn btn-primary" onclick="document.getElementById('experience').scrollIntoView({behavior:'smooth'})">Ver experiência</a>
@@ -589,9 +587,9 @@
       </div>
       <div class="exp-content">
         <div class="exp-role">Full-Stack Developer &amp; Arquitecto de Sistemas</div>
-        <div class="exp-org">Armazém das Portas, Lda · Rio de Mouro, PT</div>
+        <div class="exp-org">Empresa do setor industrial e construção · Portugal</div>
         <ul class="exp-bullets">
-          <li>Arquitectura e desenvolvimento do <b>PerfectProfit</b>: migração incremental VBA/Access → API REST Node.js/Express + SQL Server sem downtime em produção.</li>
+          <li>Arquitectura e desenvolvimento de uma <b>plataforma empresarial de gestão operacional e orçamentação</b>: migração incremental VBA/Access → API REST Node.js/Express + SQL Server sem downtime em produção.</li>
           <li>API multi-cliente: VBA/Excel legado, SPA web e AppSheet low-code em simultâneo.</li>
           <li><b>Autenticação dual</b>: JWT + cookies httpOnly para web; bcrypt + SHA-256 API key para cliente VBA legado.</li>
           <li>Migração de schema relacional completa via SSMA (Access → SQL Server Express, 25 FKs).</li>
@@ -601,7 +599,7 @@
           <li>Administração Windows Server (Domain Controller, AD), IIS reverse proxy, <b>Cloudflare</b> DNS/proxy em produção.</li>
           <li>OAuth Google via <b>Passport.js</b> com tabela LoginOAuth e linkagem a contas legadas.</li>
           <li>Dashboard de relatórios com RBAC (admin/gestor), volume de propostas e breakdown por utilizador.</li>
-          <li>Integração <b>Meta/Facebook Graph API v19.0</b> para insights de marketing orgânico.</li>
+          <li>Integração com APIs externas para recolha e análise de métricas operacionais e marketing.</li>
           <li>Refactor extensivo de ~50 formulários VBA e 9 módulos, preservando 100% da assinatura original.</li>
           <li>Auto-updater VBScript para distribuição automática a utilizadores não técnicos.</li>
           <li>Backups automatizados via Task Scheduler; planeamento de migração para Hyper-V (3 VMs + 1 físico).</li>
@@ -632,7 +630,7 @@
     <div class="proj-grid">
       <div class="proj-card">
         <div class="proj-icon">⚙️</div>
-        <div class="proj-name">API REST PerfectProfit</div>
+        <div class="proj-name">Enterprise REST Platform</div>
         <div class="proj-desc">Node.js/Express em produção com middleware de autenticação dual, gestão de chaves e service layer. Serve 3 clientes em simultâneo.</div>
         <div class="proj-tags">
           <span class="tag tag-green">Node.js</span>
@@ -662,7 +660,7 @@
       </div>
       <div class="proj-card">
         <div class="proj-icon">🪟</div>
-        <div class="proj-name">Configurador SVG de Vãos</div>
+        <div class="proj-name">Interactive SVG Configuration Engine</div>
         <div class="proj-desc">Editor interactivo SVG de janelas e portas com terminologia técnica portuguesa, zoom/pan e geração automática de descrição.</div>
         <div class="proj-tags">
           <span class="tag tag-purple">SVG</span>
@@ -672,7 +670,7 @@
       </div>
       <div class="proj-card">
         <div class="proj-icon">🔐</div>
-        <div class="proj-name">Obfuscação IIS + OAuth Google</div>
+        <div class="proj-name">Enterprise Authentication & Security Layer</div>
         <div class="proj-desc">URL Rewrite com rewriteMap, chaves hex via randomBytes, headers injectados server-side. OAuth via Passport.js com LinkOAuth.</div>
         <div class="proj-tags">
           <span class="tag tag-orange">IIS</span>
@@ -701,8 +699,8 @@
     <h2 class="sec-title">Arquitectura de Produção</h2>
     <div class="about-grid">
       <div class="about-text">
-        <p>Sistema desenvolvido e operado a solo, cobrindo desenvolvimento de software, administração de servidor, gestão de DNS e proxy reverso — sem equipa, sem orçamento de cloud, em produção real.</p>
-        <p>A Armazém das Portas processa orçamentos de caixilharia (PVC/alumínio) com o PerfectProfit todos os dias. A migração do sistema legado (VBA+Access, ~2008) para stack moderna acontece em paralelo com a operação, sem janelas de manutenção.</p>
+        <p>Sistema desenvolvido e operado integralmente por uma única pessoa, abrangendo desenvolvimento backend e frontend, administração de servidores, bases de dados, integração de serviços externos e gestão de infraestrutura.</p>
+        <p>A plataforma suporta processos empresariais críticos em ambiente de produção. A modernização de componentes legados decorre de forma incremental, mantendo compatibilidade com sistemas existentes e disponibilidade contínua.</p>
         <div class="stat-row">
           <div class="stat-box">
             <div class="stat-num">6+</div>
@@ -725,12 +723,12 @@
       <div>
         <div class="arch-diagram">
 <span class="t-out">┌── Cloudflare DNS/Proxy ──────────────────┐</span>
-<span class="hl">  app.armazemdasportas.pt</span>
-<span class="hl">  intranet.armazemdasportas.pt</span>
+<span class="hl">  Public Applications</span>
+<span class="hl">  Public Applications</span>
 <span class="t-out">└──────────────┬───────────────────────────┘</span>
                <span class="t-out">│</span>
 <span class="t-out">┌──────────────▼───────────────────────────┐</span>
-<span class="t-out">│  </span><span class="hl2">IIS (WIN-PPS001)</span>
+<span class="t-out">│  </span><span class="hl2">Reverse Proxy Layer</span>
 <span class="t-out">│  URL Rewrite · Header Injection · Proxy   │</span>
 <span class="t-out">└──────┬───────────────────┬───────────────┘</span>
        <span class="t-out">│</span>                   <span class="t-out">│</span>

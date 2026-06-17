@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mozar Gonçalves — Full-Stack Developer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:      #0D1117;
+    --surface: #161B22;
+    --border:  #21262D;
+    --accent:  #00D4AA;
+    --accent2: #7C3AED;
+    --warn:    #F97316;
+    --text:    #E6EDF3;
+    --muted:   #8B949E;
+    --light:   #C9D1D9;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ── Scanline texture overlay ─────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,.04) 2px,
+      rgba(0,0,0,.04) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── Nav ──────────────────────────────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 56px;
+    background: rgba(13,17,23,.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: .04em;
+  }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: .06em;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a, .btn, .contact-chip { cursor: pointer; }
+
+  /* ── Hero ─────────────────────────────────────────────────────────────── */
+  #hero {
+    position: relative;
+    display: flex; flex-direction: column; justify-content: center;
+    min-height: 88vh;
+    padding: 5rem 2.5rem 4rem;
+    overflow: hidden;
+  }
+
+  /* grid background */
+  #hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,170,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,170,.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-inner { position: relative; max-width: 900px; }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: .14em;
+    margin-bottom: 1.2rem;
+  }
+  .hero-eyebrow span { opacity: .5; }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    color: var(--text);
+    margin-bottom: .6rem;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 560px;
+    margin: 1rem 0 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .08em;
+    padding: .7rem 1.4rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all .2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .btn-primary:hover { background: #00bfa0; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--light);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* terminal card */
+  .terminal {
+    position: absolute;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  @media (max-width: 900px) { .terminal { display: none; } }
+
+  .terminal-bar {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .6rem .8rem;
+    background: var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #FF5F56; }
+  .dot-y { background: #FFBD2E; }
+  .dot-g { background: #27C93F; }
+  .terminal-title { color: var(--muted); font-size: 11px; margin-left: auto; }
+
+  .terminal-body { padding: 1rem; line-height: 2; }
+  .t-prompt { color: var(--accent); }
+  .t-cmd { color: var(--text); }
+  .t-out { color: var(--muted); }
+  .t-key { color: #7C3AED; }
+  .t-val { color: var(--warn); }
+  .t-cursor { display: inline-block; width: 8px; height: 14px; background: var(--accent); animation: blink 1.1s step-end infinite; vertical-align: text-bottom; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── Sections shared ──────────────────────────────────────────────────── */
+  section { padding: 5rem 2.5rem; }
+  .container { max-width: 980px; margin: 0 auto; }
+
+  .sec-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: .14em;
+    margin-bottom: .5rem;
+  }
+  .sec-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2.5rem;
+    letter-spacing: -.01em;
+  }
+  .divider {
+    width: 40px; height: 2px;
+    background: var(--accent);
+    margin: .6rem 0 2.5rem;
+  }
+
+  /* ── Stack ────────────────────────────────────────────────────────────── */
+  #stack { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .stack-cell {
+    background: var(--surface);
+    padding: 1.4rem 1.6rem;
+  }
+  .stack-cat {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: .1em;
+    margin-bottom: .7rem;
+  }
+  .stack-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: .25rem .6rem;
+    border-radius: 3px;
+    border: 1px solid;
+  }
+  .tag-green  { color: var(--accent);  border-color: rgba(0,212,170,.3);  background: rgba(0,212,170,.07); }
+  .tag-purple { color: #A78BFA;        border-color: rgba(124,58,237,.3); background: rgba(124,58,237,.07);}
+  .tag-orange { color: var(--warn);    border-color: rgba(249,115,22,.3); background: rgba(249,115,22,.07);}
+  .tag-grey   { color: var(--light);   border-color: var(--border);       background: rgba(255,255,255,.03);}
+
+  /* ── Experience ───────────────────────────────────────────────────────── */
+  #experience { background: var(--bg); }
+
+  .exp-item {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 0 2.5rem;
+    margin-bottom: 3rem;
+  }
+  @media (max-width: 650px) {
+    .exp-item { grid-template-columns: 1fr; }
+  }
+
+  .exp-meta { text-align: right; padding-top: .15rem; }
+  .exp-dates {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .exp-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    border: 1px solid rgba(0,212,170,.4);
+    border-radius: 3px;
+    padding: .1rem .4rem;
+    margin-top: .4rem;
+  }
+
+  .exp-content {}
+  .exp-role {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: .2rem;
+  }
+  .exp-org {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .exp-bullets { list-style: none; }
+  .exp-bullets li {
+    position: relative;
+    padding-left: 1.4rem;
+    margin-bottom: .5rem;
+    font-size: .9rem;
+    color: var(--light);
+    line-height: 1.6;
+  }
+  .exp-bullets li::before {
+    content: '▸';
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-size: .8rem;
+    top: .1rem;
+  }
+  .exp-bullets b { color: var(--text); font-weight: 600; }
+
+  /* ── Projects ─────────────────────────────────────────────────────────── */
+  #projects { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .proj-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.4rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .proj-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .proj-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .proj-icon {
+    font-size: 1.4rem;
+    margin-bottom: .8rem;
+  }
+  .proj-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: .4rem;
+  }
+  .proj-desc {
+    font-size: .85rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .proj-tags { margin-top: .8rem; display: flex; flex-wrap: wrap; gap: .3rem; }
+
+  /* ── About / Infra ────────────────────────────────────────────────────── */
+  #about { background: var(--bg); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; } }
+
+  .about-text p { color: var(--light); line-height: 1.75; margin-bottom: 1rem; }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .8rem;
+    margin-top: 1.5rem;
+  }
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1rem;
+  }
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: .3rem;
+  }
+  .stat-label {
+    font-size: .8rem;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.4rem;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 2;
+    color: var(--muted);
+  }
+  .arch-diagram .hl  { color: var(--accent); }
+  .arch-diagram .hl2 { color: var(--warn); }
+  .arch-diagram .hl3 { color: #A78BFA; }
+
+  /* ── Contact ──────────────────────────────────────────────────────────── */
+  #contact {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 4rem 2.5rem;
+  }
+  #contact h2 { font-size: 1.6rem; margin-bottom: .5rem; }
+  #contact p { color: var(--muted); margin-bottom: 2rem; }
+  .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .contact-chip {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: .55rem 1rem;
+    text-decoration: none;
+    transition: all .2s;
+  }
+  .contact-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 1.2rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ───────────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">~/mozar $ <span style="opacity:.4">▌</span></div>
+  <div class="nav-links">
+    <a onclick="document.getElementById('stack').scrollIntoView({behavior:'smooth'})">Stack</a>
+    <a onclick="document.getElementById('experience').scrollIntoView({behavior:'smooth'})">Experiência</a>
+    <a onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">Projectos</a>
+    <a onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Infra</a>
+    <a onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Contacto</a>
+  </div>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow"><span>//</span> FULL-STACK DEVELOPER · SISTEMAS · INFRA</p>
+    <h1>Mozar<br><em>Gonçalves</em></h1>
+    <p class="hero-sub">
+      Responsável pela arquitectura, desenvolvimento e operação completa de um sistema 
+      de orçamentação em produção — migração activa de monólito VBA/Access para 
+      stack Node.js + SQL Server + Web, sem downtime, a solo.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" onclick="document.getElementById('experience').scrollIntoView({behavior:'smooth'})">Ver experiência</a>
+      <a class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Contactar</a>
+    </div>
+  </div>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="terminal-title">mozar@WIN-PPS001 ~</div>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-prompt">$ </span><span class="t-cmd">whoami</span></div>
+      <div class="t-out">mozar · full-stack · infra · cto</div>
+      <div><span class="t-prompt">$ </span><span class="t-cmd">node --version</span></div>
+      <div class="t-out">v20.x · Express REST API</div>
+      <div><span class="t-prompt">$ </span><span class="t-cmd">cat stack.json</span></div>
+      <div><span class="t-key">"backend"</span><span class="t-out">: </span><span class="t-val">"Node.js + SQL Server"</span></div>
+      <div><span class="t-key">"auth"</span><span class="t-out">:    </span><span class="t-val">"JWT + bcrypt dual"</span></div>
+      <div><span class="t-key">"proxy"</span><span class="t-out">:   </span><span class="t-val">"IIS + Cloudflare"</span></div>
+      <div><span class="t-key">"legacy"</span><span class="t-out">:  </span><span class="t-val">"VBA/Access → migrating"</span></div>
+      <div><span class="t-prompt">$ </span><span class="t-cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STACK ─────────────────────────────────────────────────────────────── -->
+<section id="stack">
+  <div class="container">
+    <div class="sec-label">// 01 — COMPETÊNCIAS</div>
+    <h2 class="sec-title">Stack Técnica</h2>
+    <div class="stack-grid">
+      <div class="stack-cell">
+        <div class="stack-cat">BACKEND</div>
+        <div class="stack-tags">
+          <span class="tag tag-green">Node.js</span>
+          <span class="tag tag-green">Express</span>
+          <span class="tag tag-green">REST API</span>
+          <span class="tag tag-green">JWT</span>
+          <span class="tag tag-green">bcrypt</span>
+          <span class="tag tag-green">SHA-256</span>
+          <span class="tag tag-green">node-windows</span>
+        </div>
+      </div>
+      <div class="stack-cell">
+        <div class="stack-cat">BASE DE DADOS</div>
+        <div class="stack-tags">
+          <span class="tag tag-green">SQL Server Express</span>
+          <span class="tag tag-green">T-SQL</span>
+          <span class="tag tag-green">mssql</span>
+          <span class="tag tag-grey">Microsoft Access</span>
+          <span class="tag tag-grey">SSMA</span>
+          <span class="tag tag-grey">TDE AES-256</span>
+        </div>
+      </div>
+      <div class="stack-cell">
+        <div class="stack-cat">FRONTEND</div>
+        <div class="stack-tags">
+          <span class="tag tag-purple">JavaScript ES6+</span>
+          <span class="tag tag-purple">HTML5 / CSS3</span>
+          <span class="tag tag-purple">Chart.js 4.4</span>
+          <span class="tag tag-purple">SVG interactivo</span>
+          <span class="tag tag-purple">React (scaffold)</span>
+        </div>
+      </div>
+      <div class="stack-cell">
+        <div class="stack-cat">INFRA / SYSADMIN</div>
+        <div class="stack-tags">
+          <span class="tag tag-orange">Windows Server</span>
+          <span class="tag tag-orange">IIS + URL Rewrite</span>
+          <span class="tag tag-orange">Active Directory</span>
+          <span class="tag tag-orange">Hyper-V</span>
+          <span class="tag tag-orange">Cloudflare</span>
+          <span class="tag tag-orange">IKEv2 VPN</span>
+        </div>
+      </div>
+      <div class="stack-cell">
+        <div class="stack-cat">SEGURANÇA</div>
+        <div class="stack-tags">
+          <span class="tag tag-green">OWASP</span>
+          <span class="tag tag-green">Cookies httpOnly</span>
+          <span class="tag tag-green">Proxy key injection</span>
+          <span class="tag tag-green">SQL parameterized</span>
+          <span class="tag tag-green">LGPD</span>
+        </div>
+      </div>
+      <div class="stack-cell">
+        <div class="stack-cat">INTEGRAÇÕES / LEGADO</div>
+        <div class="stack-tags">
+          <span class="tag tag-grey">VBA / Access</span>
+          <span class="tag tag-grey">Google OAuth</span>
+          <span class="tag tag-grey">Meta Graph API</span>
+          <span class="tag tag-grey">AppSheet</span>
+          <span class="tag tag-grey">Passport.js</span>
+          <span class="tag tag-grey">VBScript</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EXPERIENCE ─────────────────────────────────────────────────────────── -->
+<section id="experience">
+  <div class="container">
+    <div class="sec-label">// 02 — EXPERIÊNCIA</div>
+    <h2 class="sec-title">Percurso Profissional</h2>
+
+    <div class="exp-item">
+      <div class="exp-meta">
+        <div class="exp-dates">Nov 2019<br>— Presente</div>
+        <div class="exp-badge">6+ anos</div>
+      </div>
+      <div class="exp-content">
+        <div class="exp-role">Full-Stack Developer &amp; Arquitecto de Sistemas</div>
+        <div class="exp-org">Armazém das Portas, Lda · Rio de Mouro, PT</div>
+        <ul class="exp-bullets">
+          <li>Arquitectura e desenvolvimento do <b>PerfectProfit</b>: migração incremental VBA/Access → API REST Node.js/Express + SQL Server sem downtime em produção.</li>
+          <li>API multi-cliente: VBA/Excel legado, SPA web e AppSheet low-code em simultâneo.</li>
+          <li><b>Autenticação dual</b>: JWT + cookies httpOnly para web; bcrypt + SHA-256 API key para cliente VBA legado.</li>
+          <li>Migração de schema relacional completa via SSMA (Access → SQL Server Express, 25 FKs).</li>
+          <li>Frontend vanilla sem framework: dashboard de propostas, relatórios com <b>Chart.js</b>, modais, loading states, sidebar partilhada.</li>
+          <li><b>Configurador SVG interactivo</b> de janelas/vãos com terminologia técnica portuguesa, zoom/pan e auto-descrição.</li>
+          <li>Obfuscação de URLs e injecção de API keys via <b>IIS URL Rewrite</b> — chaves nunca expostas ao browser.</li>
+          <li>Administração Windows Server (Domain Controller, AD), IIS reverse proxy, <b>Cloudflare</b> DNS/proxy em produção.</li>
+          <li>OAuth Google via <b>Passport.js</b> com tabela LoginOAuth e linkagem a contas legadas.</li>
+          <li>Dashboard de relatórios com RBAC (admin/gestor), volume de propostas e breakdown por utilizador.</li>
+          <li>Integração <b>Meta/Facebook Graph API v19.0</b> para insights de marketing orgânico.</li>
+          <li>Refactor extensivo de ~50 formulários VBA e 9 módulos, preservando 100% da assinatura original.</li>
+          <li>Auto-updater VBScript para distribuição automática a utilizadores não técnicos.</li>
+          <li>Backups automatizados via Task Scheduler; planeamento de migração para Hyper-V (3 VMs + 1 físico).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-meta">
+        <div class="exp-dates">Ago 2015<br>— Jul 2016</div>
+      </div>
+      <div class="exp-content">
+        <div class="exp-role">Técnico Administrativo</div>
+        <div class="exp-org">Vale S/A · Timóteo-MG, Brasil</div>
+        <ul class="exp-bullets">
+          <li>Gestão documental e administrativa, controlo de ficheiros RH, contacto com clientes e fornecedores.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ───────────────────────────────────────────────────────────── -->
+<section id="projects">
+  <div class="container">
+    <div class="sec-label">// 03 — ENTREGÁVEIS EM PRODUÇÃO</div>
+    <h2 class="sec-title">Projectos</h2>
+    <div class="proj-grid">
+      <div class="proj-card">
+        <div class="proj-icon">⚙️</div>
+        <div class="proj-name">API REST PerfectProfit</div>
+        <div class="proj-desc">Node.js/Express em produção com middleware de autenticação dual, gestão de chaves e service layer. Serve 3 clientes em simultâneo.</div>
+        <div class="proj-tags">
+          <span class="tag tag-green">Node.js</span>
+          <span class="tag tag-green">JWT</span>
+          <span class="tag tag-green">SQL Server</span>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-icon">🗄️</div>
+        <div class="proj-name">Migração Access → SQL Server</div>
+        <div class="proj-desc">SSMA, 25 foreign keys, conversões de sintaxe documentadas, BD dev isolada, sem downtime operacional.</div>
+        <div class="proj-tags">
+          <span class="tag tag-grey">SSMA</span>
+          <span class="tag tag-green">SQL Server</span>
+          <span class="tag tag-grey">T-SQL</span>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-icon">📊</div>
+        <div class="proj-name">Dashboard + Relatórios</div>
+        <div class="proj-desc">Dashboard web de propostas com cards dinâmicos, Chart.js, filtros por período e RBAC admin/gestor.</div>
+        <div class="proj-tags">
+          <span class="tag tag-purple">Chart.js</span>
+          <span class="tag tag-purple">Vanilla JS</span>
+          <span class="tag tag-green">RBAC</span>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-icon">🪟</div>
+        <div class="proj-name">Configurador SVG de Vãos</div>
+        <div class="proj-desc">Editor interactivo SVG de janelas e portas com terminologia técnica portuguesa, zoom/pan e geração automática de descrição.</div>
+        <div class="proj-tags">
+          <span class="tag tag-purple">SVG</span>
+          <span class="tag tag-purple">Canvas</span>
+          <span class="tag tag-purple">JavaScript</span>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-icon">🔐</div>
+        <div class="proj-name">Obfuscação IIS + OAuth Google</div>
+        <div class="proj-desc">URL Rewrite com rewriteMap, chaves hex via randomBytes, headers injectados server-side. OAuth via Passport.js com LinkOAuth.</div>
+        <div class="proj-tags">
+          <span class="tag tag-orange">IIS</span>
+          <span class="tag tag-green">Passport.js</span>
+          <span class="tag tag-orange">Cloudflare</span>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-icon">🤖</div>
+        <div class="proj-name">Auto-updater VBScript</div>
+        <div class="proj-desc">Sistema de distribuição automática de actualizações do Orcamentador.xlsm para utilizadores finais não técnicos.</div>
+        <div class="proj-tags">
+          <span class="tag tag-grey">VBScript</span>
+          <span class="tag tag-grey">VBA</span>
+          <span class="tag tag-grey">Windows</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT / INFRA ──────────────────────────────────────────────────────── -->
+<section id="about">
+  <div class="container">
+    <div class="sec-label">// 04 — INFRA &amp; CONTEXTO</div>
+    <h2 class="sec-title">Arquitectura de Produção</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>Sistema desenvolvido e operado a solo, cobrindo desenvolvimento de software, administração de servidor, gestão de DNS e proxy reverso — sem equipa, sem orçamento de cloud, em produção real.</p>
+        <p>A Armazém das Portas processa orçamentos de caixilharia (PVC/alumínio) com o PerfectProfit todos os dias. A migração do sistema legado (VBA+Access, ~2008) para stack moderna acontece em paralelo com a operação, sem janelas de manutenção.</p>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="stat-num">6+</div>
+            <div class="stat-label">anos solo</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">3</div>
+            <div class="stat-label">clientes API</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">25</div>
+            <div class="stat-label">FKs migradas</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">0</div>
+            <div class="stat-label">downtime migração</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="arch-diagram">
+<span class="t-out">┌── Cloudflare DNS/Proxy ──────────────────┐</span>
+<span class="hl">  app.armazemdasportas.pt</span>
+<span class="hl">  intranet.armazemdasportas.pt</span>
+<span class="t-out">└──────────────┬───────────────────────────┘</span>
+               <span class="t-out">│</span>
+<span class="t-out">┌──────────────▼───────────────────────────┐</span>
+<span class="t-out">│  </span><span class="hl2">IIS (WIN-PPS001)</span>
+<span class="t-out">│  URL Rewrite · Header Injection · Proxy   │</span>
+<span class="t-out">└──────┬───────────────────┬───────────────┘</span>
+       <span class="t-out">│</span>                   <span class="t-out">│</span>
+<span class="t-out">┌──────▼──────┐   ┌───────▼───────────────┐</span>
+<span class="t-out">│ </span><span class="hl">Node.js API</span> <span class="t-out">│   │ </span><span class="hl3">SQL Server Express</span>
+<span class="t-out">│ Express     │   │ TDE · 25 FKs · Backups│</span>
+<span class="t-out">│ JWT + bcrypt│   └───────────────────────┘</span>
+<span class="t-out">└──────┬──────┘</span>
+       <span class="t-out">│ serve</span>
+<span class="t-out">  ┌────┴────┬──────────┐</span>
+  <span class="hl">Web SPA</span>  <span class="hl2">VBA/Excel</span>  <span class="hl3">AppSheet</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ────────────────────────────────────────────────────────────── -->
+<section id="contact">
+  <div class="container">
+    <h2>Vamos falar?</h2>
+    <p>Disponível para oportunidades de desenvolvimento full-stack, arquitectura de sistemas ou migração de legado.</p>
+    <div class="contact-links">
+      <a href="mailto:mozargsj@gmail.com" class="contact-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        mozargsj@gmail.com
+      </a>
+      <a href="tel:+351912508157" class="contact-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.38 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.09a16 16 0 0 0 6 6l.93-.93a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        +351 912 508 157
+      </a>
+      <span class="contact-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        Rio de Mouro · Sintra · Lisboa, PT
+      </span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Mozar Gonçalves da Silva Junior · <span>Full-Stack Developer</span> · Lisboa 2026
+</footer>
+
+</body>
+</html>
